@@ -80,6 +80,12 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     target = out_dir / "entry.png"
     target.write_bytes(blob)
+    # Read the file back and prove the copy landed intact before
+    # reporting success: a silent short write would otherwise pass
+    # every check above and still ship a broken picture.
+    written = target.read_bytes()
+    if written != blob:
+        stop("written file differs from entry.png after copy")
     print("wrote %s (%dx%d, %d bytes)" % (target, width, height, len(blob)))
 
 
